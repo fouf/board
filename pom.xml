@@ -62,6 +62,10 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -71,5 +75,14 @@
             <version>1.12.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+
+
+        <dependency>
+            <groupId>com.github.steffansk1997</groupId>
+            <artifactId>RPEngine</artifactId>
+            <version>master-SNAPSHOT</version>
+        </dependency>
+
+
     </dependencies>
 </project>
