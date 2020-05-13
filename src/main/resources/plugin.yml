@@ -1,3 +1,15 @@
 name: Board
 version: ${project.version}
 main: com.foufys.Board
+depend: [RPEngine]
+commands:
+  board:
+    description: View list of currently alive players seen by the board
+    usage: /board
+    permission: board.view
+    permission-message: You don't have the board.view permission
+permissions:
+  board.view:
+    descirption: Can view list of currently alive players seen by the board
+    default: true
+

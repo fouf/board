@@ -1,82 +1,206 @@
 package com.foufys;
 
+import com.Alvaeron.api.RPEngineAPI;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Team;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
-import java.util.List;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class BoardData {
 
-    public class AlivePlayer {
+    public static class AlivePlayer implements java.lang.Comparable<AlivePlayer> {
         public String PlayerName;
-        public String Title;
-    }
+        public String RPName;
+        public String TeamName;
 
-    private final Logger logger;
+        AlivePlayer() {
+
+        }
+        AlivePlayer(String playerName, String rpName, String teamName) {
+            this.PlayerName = playerName;
+            this.RPName = rpName;
+            this.TeamName = teamName;
+        }
+
+        @Override
+        public int compareTo(AlivePlayer other) {
+            Map<String, Integer> teamValues = new HashMap<>();
+            teamValues.put("Brothers", 3);
+            teamValues.put("Acolytes", 2);
+            teamValues.put("Serfs", 1);
+            teamValues.put("NONE", 0);
+
+            if (teamValues.containsKey(this.TeamName) && teamValues.containsKey(other.TeamName)) {
+                int a = teamValues.get(this.TeamName);
+                int b = teamValues.get(other.TeamName);
+                return b - a;
+            } else {
+                return this.TeamName.compareTo(other.TeamName);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "----- " + this.PlayerName;
+        }
+    }
 
     private final File boardFolder;
     private final File dataFile;
 
-    private JSONObject json;
-    private JSONParser jsonParser = new JSONParser();
+    private final JSONParser jsonParser = new JSONParser();
 
-    private List<Player> alivePlayers;
+    private final List<AlivePlayer> alivePlayers;
 
-    public BoardData(Logger logger) {
-        this.logger = logger;
+    Plugin plugin = Board.getPlugin(Board.class);
+
+    public BoardData() {
+
+        this.alivePlayers = new ArrayList<AlivePlayer>();
 
         this.dataFile = new File("./plugins/Board/", "board-data.json");
         this.boardFolder = new File("./plugins/Board");
 
-        logger.log(Level.INFO, "Checking board data files...");
-        this.initializeConfig();
+        plugin.getLogger().log(Level.INFO, "Checking board data files...");
+        this.initializeDataFile();
     }
 
-    public void initializeConfig() {
+    public void initializeDataFile() {
         if (!this.dataFile.exists()) {
             if (!this.boardFolder.exists()) {
                 try {
                     if (this.boardFolder.mkdir()) {
                         try {
                             if (dataFile.createNewFile()) {
-                                logger.log(Level.INFO, "Board data files created.");
+                                plugin.getLogger().log(Level.INFO, "Board data files created.");
                             } else {
-                                logger.log(Level.SEVERE, "Could not create board data file. No data will be saved.");
+                                plugin.getLogger().log(Level.SEVERE, "Could not create board data file. No data will be saved.");
                             }
                         } catch (Exception e) {
-                            logger.log(Level.SEVERE, "Could not create board data file, no data will be saved: " + e.getMessage());
+                            plugin.getLogger().log(Level.SEVERE, "Could not create board data file, no data will be saved: " + e.getMessage());
                         }
                     } else {
-                        logger.log(Level.WARNING, "Could not create board data folder. No data will be saved.");
+                        plugin.getLogger().log(Level.WARNING, "Could not create board data folder. No data will be saved.");
                     }
                 } catch (Exception e) {
-                    logger.log(Level.SEVERE, "Could not create board data folder, no data will be saved: " + e.getMessage());
+                    plugin.getLogger().log(Level.SEVERE, "Could not create board data folder, no data will be saved: " + e.getMessage());
                 }
             }
         } else {
-            logger.log(Level.INFO, "Board data files OK.");
+            plugin.getLogger().log(Level.INFO, "Board data files OK.");
         }
     }
 
+    public List<AlivePlayer> GetAlivePlayers() {
+        Collections.sort(this.alivePlayers);
+        return this.alivePlayers;
+    }
 
-    public void addPlayer(Player player) {
-        Team team = player.getScoreboard().getPlayerTeam(player);
+    public void addOrUpdatePlayer(Player player) {
+
+        if (player == null || player.isDead() || player.isBanned() || !player.isWhitelisted() || player.isEmpty()) {
+            return;
+        }
+
+        String rpName = "";
+        try {
+            rpName = RPEngineAPI.getRpName(player.getName());
+        } catch (Exception e) {
+            rpName = "";
+        }
+
+        Team playerTeam = getPlayerTeam(player);
+        String teamName = "NONE";
+        if (playerTeam != null) {
+            teamName = playerTeam.getName();
+        }
+
+
+        if (alreadyAlive(player)) {
+            // just update, if they already exist
+            for (AlivePlayer alivePlayer : alivePlayers) {
+                if (player.getName().equals(alivePlayer.PlayerName)) {
+                    alivePlayer.TeamName = teamName;
+                    alivePlayer.RPName = rpName;
+                }
+            }
+            return;
+        }
+
+        this.alivePlayers.add(new AlivePlayer(player.getName(), rpName, teamName));
+        plugin.getLogger().log(Level.INFO, "Player " + player.getName() + " added to the board under team " + playerTeam.getName() + ".");
     }
     public void removePlayer(Player player) {
-
+        alivePlayers.removeIf(alivePlayer -> alivePlayer.PlayerName.equals(player.getName()));
+        plugin.getLogger().log(Level.INFO, "Player " + player.getName() + " removed from the board.");
     }
 
-    public void saveJson() {
-
+    private Team getPlayerTeam(Player player) {
+        Set<Team> teams = plugin.getServer().getScoreboardManager().getMainScoreboard().getTeams();
+        for (Team team : teams) {
+            if (team.hasEntry(player.getName())) {
+                return team;
+            }
+        }
+        return null;
     }
 
-    public void loadJson() {
+    private boolean alreadyAlive(Player player) {
+        for (AlivePlayer alivePlayer : alivePlayers) {
+            if (player.getName().equals(alivePlayer.PlayerName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
+    public void saveData() {
+        JSONArray playerJSONArray = new JSONArray();
+        for (AlivePlayer alivePlayer : this.alivePlayers) {
+            JSONObject playerJSONObject = new JSONObject();
+            playerJSONObject.put("PlayerName", alivePlayer.PlayerName);
+            playerJSONObject.put("TeamName", alivePlayer.TeamName);
+            playerJSONObject.put("RPName", alivePlayer.RPName);
+            playerJSONArray.add(playerJSONObject);
+        }
+
+        try {
+            FileWriter dataFileWriter = new FileWriter(this.dataFile);
+            dataFileWriter.write(playerJSONArray.toJSONString());
+            dataFileWriter.close();
+            plugin.getLogger().log(Level.INFO, "Successfully saved board player data.");
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.WARNING, "Could not save board player data: " + e.getMessage());
+        }
+    }
+
+    public void loadData() {
+        try {
+            Object object = jsonParser.parse(new FileReader(this.dataFile));
+            JSONArray playerJSONArray = (JSONArray) object;
+            for (Object o : playerJSONArray) {
+                JSONObject playerJSONObject = (JSONObject) o;
+                AlivePlayer player = new AlivePlayer();
+
+                player.PlayerName = (String) playerJSONObject.get("PlayerName");
+                player.TeamName = (String) playerJSONObject.get("TeamName");
+                player.RPName = (String) playerJSONObject.get("RPName");
+                this.alivePlayers.add(player);
+            }
+
+            plugin.getLogger().log(Level.WARNING, "Successfully loaded " + playerJSONArray.size() + " players");
+
+        } catch (Exception e) {
+            plugin.getLogger().log(Level.WARNING, "Could not load board player data: " + e.getMessage());
+        }
     }
 
 }
