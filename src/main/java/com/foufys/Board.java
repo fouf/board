@@ -11,11 +11,15 @@ import org.json.simple.parser.JSONParser;
 import java.io.File;
 import java.util.logging.Level;
 
-public final class board extends JavaPlugin {
+public final class Board extends JavaPlugin {
+
+    private BoardData boardData;
+
     @Override
     public void onEnable() {
         getLogger().log(Level.INFO, "has been enabled.");
-        getServer().getPluginManager().registerEvents(new PlayerListener(getLogger()), this);
+        boardData = new BoardData(getLogger());
+        getServer().getPluginManager().registerEvents(new PlayerListener(getLogger(), this.boardData), this);
     }
 
     @Override

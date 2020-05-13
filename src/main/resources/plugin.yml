@@ -1,3 +1,3 @@
 name: Board
 version: ${project.version}
-main: com.foufys.board
+main: com.foufys.Board
