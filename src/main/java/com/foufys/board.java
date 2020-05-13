@@ -5,23 +5,22 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.File;
+import java.util.logging.Level;
 
 public final class board extends JavaPlugin {
-
-    public void boardLog(String message) {
-        getLogger().info("[Board v" + getDescription().getVersion() + "] " + message);
-    }
-
     @Override
     public void onEnable() {
-        boardLog("has been enabled");
+        getLogger().log(Level.INFO, "has been enabled.");
         getServer().getPluginManager().registerEvents(new PlayerListener(getLogger()), this);
     }
 
     @Override
     public void onDisable() {
-        boardLog("has been disabled.");
-
+        getLogger().log(Level.INFO, "has been disabled.");
     }
 
     @Override
