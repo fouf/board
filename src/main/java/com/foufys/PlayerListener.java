@@ -42,7 +42,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void playerSpawnEvent(PlayerSpawnLocationEvent event) {
-        if (event.getPlayer() != null && !event.getPlayer().isDead() && !event.getPlayer().isBanned()) {
+        if (event.getPlayer() != null) {
             // add them to alive board
             this.boardData.addOrUpdatePlayer(event.getPlayer());
         }
@@ -61,11 +61,11 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void playerLoggedIn(PlayerLoginEvent event) {
-        /* // add to board on login
-        if (event.getPlayer() != null && !event.getPlayer().isDead()) {
+        // add to board on login
+        if (event.getPlayer() != null) {
             // add them to alive board
-            this.boardData.addPlayer(event.getPlayer());
-        }*/
+            this.boardData.addOrUpdatePlayer(event.getPlayer());
+        }
     }
 
     @EventHandler
