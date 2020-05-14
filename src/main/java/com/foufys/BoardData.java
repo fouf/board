@@ -33,6 +33,8 @@ public class BoardData {
         @Override
         public int compareTo(AlivePlayer other) {
             Map<String, Integer> teamValues = new HashMap<>();
+            teamValues.put("Lords", 5);
+            teamValues.put("Leaders", 4);
             teamValues.put("Brothers", 3);
             teamValues.put("Acolytes", 2);
             teamValues.put("Serfs", 1);

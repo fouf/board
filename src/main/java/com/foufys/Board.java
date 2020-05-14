@@ -11,6 +11,8 @@ import java.util.logging.Level;
 
 public final class Board extends JavaPlugin {
 
+    public ChatColor LORD_COLOR = ChatColor.DARK_RED;
+    public ChatColor LEADERS_COLOR = ChatColor.AQUA;
     public ChatColor BROTHERS_COLOR = ChatColor.BLUE;
     public ChatColor ACOLYTES_COLOR = ChatColor.GREEN;
     public ChatColor SERFS_COLOR = ChatColor.GRAY;
@@ -70,6 +72,10 @@ public final class Board extends JavaPlugin {
 
     public ChatColor getTeamColor(String teamName) {
         switch (teamName) {
+            case "Lords":
+                return LORD_COLOR;
+            case "Leaders":
+                return LEADERS_COLOR;
             case "Brothers":
                 return BROTHERS_COLOR;
             case "Acolytes":
