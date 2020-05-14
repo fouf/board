@@ -38,7 +38,7 @@ public final class Board extends JavaPlugin {
         if (cmd.getName().equalsIgnoreCase("board")) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                player.sendMessage(ChatColor.RED + "--------BOARD v" + getDescription().getVersion() + "--------");
+                player.sendMessage(ChatColor.YELLOW + "--------BOARD v" + getDescription().getVersion() + "--------");
                 String currentTeam = "";
                 ChatColor teamColor = ChatColor.WHITE;
                 for (BoardData.AlivePlayer alivePlayer : boardData.GetAlivePlayers()) {
@@ -52,7 +52,7 @@ public final class Board extends JavaPlugin {
                     if (currentTeam.equals("") || !currentTeam.equals(alivePlayer.TeamName)) {
                         currentTeam = alivePlayer.TeamName;
                         teamColor = getTeamColor(alivePlayer.TeamName);
-                        player.sendMessage(teamColor + "----" + alivePlayer.TeamName);
+                        player.sendMessage(teamColor + "--" + alivePlayer.TeamName);
                     }
                     Player onlineStatus = Bukkit.getPlayerExact(alivePlayer.PlayerName);
 
@@ -61,9 +61,9 @@ public final class Board extends JavaPlugin {
                         name = alivePlayer.RPName + " [" + alivePlayer.PlayerName + "]";
                     }
 
-                    player.sendMessage(teamColor + "------" + name + " - " + (onlineStatus == null ? ChatColor.RED + "OFFLINE" : ChatColor.DARK_GREEN + "ONLINE"));
+                    player.sendMessage(teamColor + name + " - " + (onlineStatus == null ? ChatColor.RED + "OFFLINE" : ChatColor.DARK_GREEN + "ONLINE"));
                 }
-                player.sendMessage(ChatColor.RED + "--------" + boardData.GetAlivePlayers().size() + " tracked alive players --------");
+                player.sendMessage(ChatColor.YELLOW + "--------" + boardData.GetAlivePlayers().size() + " tracked alive players --------");
             }
             return true;
         }

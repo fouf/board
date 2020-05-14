@@ -1,6 +1,7 @@
 package com.foufys;
 
 import com.Alvaeron.api.RPEngineAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.Team;
@@ -40,15 +41,33 @@ public class BoardData {
             teamValues.put("Serfs", 1);
             teamValues.put("NONE", 0);
 
+
+            int onlineSort = 0;
+            if (this.PlayerName != null && other.PlayerName != null) { // online sorting
+                Player onlineStatus1 = Bukkit.getPlayerExact(this.PlayerName);
+                Player onlineStatus2 = Bukkit.getPlayerExact(other.PlayerName);
+
+                if ((onlineStatus1 != null && onlineStatus2 == null) || (onlineStatus1 == null && onlineStatus2 != null)) {
+                    onlineSort = onlineStatus1 == null ? 1 : -1;
+                }
+            }
+            plugin.getLogger().log(Level.INFO, "Online sort " + this.PlayerName + " - " + other.PlayerName + ": " + onlineSort);
+
+
             if (this.TeamName != null && other.TeamName != null && teamValues.containsKey(this.TeamName) && teamValues.containsKey(other.TeamName)) {
                 int a = teamValues.get(this.TeamName);
                 int b = teamValues.get(other.TeamName);
-
-                return b - a;
+                if (a == b) {
+                    return onlineSort;
+                }
+                return (b - a);
             } else if (this.TeamName != null && other.TeamName != null) {
+                if (this.TeamName.equals(other.TeamName)) {
+                    return onlineSort;
+                }
                 return this.TeamName.compareTo(other.TeamName);
             } else {
-                return 0;
+                return onlineSort;
             }
         }
 
