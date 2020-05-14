@@ -16,7 +16,7 @@ import java.util.logging.Level;
 
 public class BoardData {
 
-    public static class AlivePlayer implements java.lang.Comparable<AlivePlayer> {
+    public class AlivePlayer implements java.lang.Comparable<AlivePlayer> {
         public String PlayerName;
         public String RPName;
         public String TeamName;
@@ -38,18 +38,24 @@ public class BoardData {
             teamValues.put("Serfs", 1);
             teamValues.put("NONE", 0);
 
-            if (teamValues.containsKey(this.TeamName) && teamValues.containsKey(other.TeamName)) {
+            if (this.TeamName != null && other.TeamName != null && teamValues.containsKey(this.TeamName) && teamValues.containsKey(other.TeamName)) {
                 int a = teamValues.get(this.TeamName);
                 int b = teamValues.get(other.TeamName);
+
                 return b - a;
-            } else {
+            } else if (this.TeamName != null && other.TeamName != null) {
                 return this.TeamName.compareTo(other.TeamName);
+            } else {
+                return 0;
             }
         }
 
         @Override
         public String toString() {
-            return "----- " + this.PlayerName;
+            if (this.PlayerName != null) {
+                return "----- " + this.PlayerName;
+            }
+            return "";
         }
     }
 
@@ -106,7 +112,7 @@ public class BoardData {
 
     public void addOrUpdatePlayer(Player player) {
 
-        if (player == null || player.isDead() || player.isBanned() || !player.isWhitelisted() || player.isEmpty()) {
+        if (player == null || player.isDead() || player.isBanned() || !player.isWhitelisted() || player.isEmpty() || player.getName().equals("")) {
             return;
         }
 

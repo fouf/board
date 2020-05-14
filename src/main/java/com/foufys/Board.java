@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Set;
 import java.util.logging.Level;
 
 public final class Board extends JavaPlugin {
@@ -41,19 +40,26 @@ public final class Board extends JavaPlugin {
                 String currentTeam = "";
                 ChatColor teamColor = ChatColor.WHITE;
                 for (BoardData.AlivePlayer alivePlayer : boardData.GetAlivePlayers()) {
-                   if (currentTeam.equals("") || !currentTeam.equals(alivePlayer.TeamName)) {
-                       currentTeam = alivePlayer.TeamName;
-                       teamColor = getTeamColor(alivePlayer.TeamName);
-                       player.sendMessage(teamColor + "----" + alivePlayer.TeamName);
-                   }
-                   Player onlineStatus = Bukkit.getPlayerExact(alivePlayer.PlayerName);
+                    if (alivePlayer == null || alivePlayer.PlayerName == null) {
+                        continue;
+                    }
+                    if (alivePlayer.PlayerName.equals("")) {
+                        continue;
+                    }
 
-                   String name = alivePlayer.PlayerName;
-                   if (alivePlayer.RPName != null && !alivePlayer.RPName.equals("") && !alivePlayer.RPName.equals("NONE")) {
-                       name = alivePlayer.RPName + " [" + alivePlayer.PlayerName + "]";
-                   }
+                    if (currentTeam.equals("") || !currentTeam.equals(alivePlayer.TeamName)) {
+                        currentTeam = alivePlayer.TeamName;
+                        teamColor = getTeamColor(alivePlayer.TeamName);
+                        player.sendMessage(teamColor + "----" + alivePlayer.TeamName);
+                    }
+                    Player onlineStatus = Bukkit.getPlayerExact(alivePlayer.PlayerName);
 
-                   player.sendMessage(teamColor + "------" + name + " - " + (onlineStatus == null ? ChatColor.GREEN + "OFFLINE" : ChatColor.RED + "ONLINE"));
+                    String name = alivePlayer.PlayerName;
+                    if (alivePlayer.RPName != null && !alivePlayer.RPName.equals("") && !alivePlayer.RPName.equals("NONE")) {
+                        name = alivePlayer.RPName + " [" + alivePlayer.PlayerName + "]";
+                    }
+
+                    player.sendMessage(teamColor + "------" + name + " - " + (onlineStatus == null ? ChatColor.RED + "OFFLINE" : ChatColor.DARK_GREEN + "ONLINE"));
                 }
                 player.sendMessage(ChatColor.RED + "--------" + boardData.GetAlivePlayers().size() + " tracked alive players --------");
             }
