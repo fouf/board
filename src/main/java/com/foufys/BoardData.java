@@ -111,8 +111,7 @@ public class BoardData {
     }
 
     public void addOrUpdatePlayer(Player player) {
-
-        if (player == null || player.isDead() || player.isBanned() || !player.isWhitelisted() || player.isEmpty() || player.getName().equals("")) {
+        if (player.isDead() || player.isBanned()) {
             return;
         }
 
