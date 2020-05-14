@@ -51,8 +51,6 @@ public class BoardData {
                     onlineSort = onlineStatus1 == null ? 1 : -1;
                 }
             }
-            plugin.getLogger().log(Level.INFO, "Online sort " + this.PlayerName + " - " + other.PlayerName + ": " + onlineSort);
-
 
             if (this.TeamName != null && other.TeamName != null && teamValues.containsKey(this.TeamName) && teamValues.containsKey(other.TeamName)) {
                 int a = teamValues.get(this.TeamName);
