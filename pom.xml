@@ -81,6 +81,7 @@
             <groupId>com.github.MOONMOONOSS</groupId>
             <artifactId>RPEngine</artifactId>
             <version>master-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
 
 
