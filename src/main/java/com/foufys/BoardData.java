@@ -1,6 +1,7 @@
 package com.foufys;
 
 import com.Alvaeron.api.RPEngineAPI;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -39,8 +40,6 @@ public class BoardData {
             teamValues.put("Brothers", 3);
             teamValues.put("Acolytes", 2);
             teamValues.put("Serfs", 1);
-            teamValues.put("NONE", 0);
-
 
             int onlineSort = 0;
             if (this.PlayerName != null && other.PlayerName != null) { // online sorting
@@ -52,20 +51,27 @@ public class BoardData {
                 }
             }
 
-            if (this.TeamName != null && other.TeamName != null && teamValues.containsKey(this.TeamName) && teamValues.containsKey(other.TeamName)) {
+            if (!StringUtils.isEmpty(this.TeamName) && !StringUtils.isEmpty(other.TeamName) && teamValues.containsKey(this.TeamName) && teamValues.containsKey(other.TeamName)) {
                 int a = teamValues.get(this.TeamName);
                 int b = teamValues.get(other.TeamName);
                 if (a == b) {
                     return onlineSort;
                 }
                 return (b - a);
-            } else if (this.TeamName != null && other.TeamName != null) {
+            } else if (!StringUtils.isEmpty(this.TeamName) && !StringUtils.isEmpty(other.TeamName)) {
+                // sort teams alphabetically then by online status for unknown teams
                 if (this.TeamName.equals(other.TeamName)) {
                     return onlineSort;
                 }
                 return this.TeamName.compareTo(other.TeamName);
             } else {
-                return onlineSort;
+                if (!StringUtils.isEmpty(this.TeamName) && StringUtils.isEmpty(other.TeamName)) {
+                    return -1;
+                } else if (StringUtils.isEmpty(this.TeamName) && !StringUtils.isEmpty(other.TeamName)) {
+                    return 1;
+                } else {
+                    return onlineSort;
+                }
             }
         }
 
@@ -142,7 +148,7 @@ public class BoardData {
         }
 
         Team playerTeam = getPlayerTeam(player);
-        String teamName = "NONE";
+        String teamName = "";
         if (playerTeam != null) {
             teamName = playerTeam.getName();
         }
@@ -160,7 +166,7 @@ public class BoardData {
         }
 
         this.alivePlayers.add(new AlivePlayer(player.getName(), rpName, teamName));
-        plugin.getLogger().log(Level.INFO, "Player " + player.getName() + " added to the board under team " + playerTeam.getName() + ".");
+        plugin.getLogger().log(Level.INFO, "Player " + player.getName() + " added to the board.");
     }
     public void removePlayer(Player player) {
         if (player != null && player.getName() != null) {

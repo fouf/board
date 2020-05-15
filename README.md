@@ -11,7 +11,6 @@ You can click an online player's name to send them a bird.
 type /board in-game to see the current list:
 
 ![Example Picture 1](https://github.com/fouf/board/blob/master/example-1.png)
-![Example Picture 2](https://github.com/fouf/board/blob/master/example-2.png)
 
 Send a bird to online players by clicking their name:
 
