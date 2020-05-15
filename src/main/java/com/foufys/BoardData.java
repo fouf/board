@@ -163,8 +163,10 @@ public class BoardData {
         plugin.getLogger().log(Level.INFO, "Player " + player.getName() + " added to the board under team " + playerTeam.getName() + ".");
     }
     public void removePlayer(Player player) {
-        alivePlayers.removeIf(alivePlayer -> alivePlayer.PlayerName.equals(player.getName()));
-        plugin.getLogger().log(Level.INFO, "Player " + player.getName() + " removed from the board.");
+        if (player != null && player.getName() != null) {
+            alivePlayers.removeIf(alivePlayer -> alivePlayer != null && alivePlayer.PlayerName != null && alivePlayer.PlayerName.equals(player.getName()));
+            plugin.getLogger().log(Level.INFO, "Player " + player.getName() + " removed from the board.");
+        }
     }
 
     private Team getPlayerTeam(Player player) {
