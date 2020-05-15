@@ -159,7 +159,9 @@ public class BoardData {
             for (AlivePlayer alivePlayer : alivePlayers) {
                 if (player.getName().equals(alivePlayer.PlayerName)) {
                     alivePlayer.TeamName = teamName;
-                    alivePlayer.RPName = rpName;
+                    if (!StringUtils.isEmpty(rpName)) {
+                        alivePlayer.RPName = rpName;
+                    }
                 }
             }
             return;
