@@ -6,10 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 public class PlayerListener implements Listener {
@@ -44,6 +41,13 @@ public class PlayerListener implements Listener {
     public void playerSpawnEvent(PlayerSpawnLocationEvent event) {
         if (event.getPlayer() != null) {
             // add them to alive board
+            this.boardData.addOrUpdatePlayer(event.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void playerRespawnEvent(PlayerRespawnEvent event) {
+        if (event.getPlayer() != null && !event.getPlayer().isBanned()) {
             this.boardData.addOrUpdatePlayer(event.getPlayer());
         }
     }
